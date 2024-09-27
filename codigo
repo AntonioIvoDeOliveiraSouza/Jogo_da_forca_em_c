@@ -1,3 +1,7 @@
+// Jogo da forca
+// Desenvolvido em   : 26/09/2024
+// Ultima atualizacao: 27/09/2024
+
 #include <stdio.h>     
 #include <stdlib.h>    
 #include <stdbool.h>   // biblioteca para booleanos (true/false)
