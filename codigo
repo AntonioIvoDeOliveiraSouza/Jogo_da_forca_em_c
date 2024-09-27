@@ -1,6 +1,9 @@
-// Jogo da forca
-// Desenvolvido em   : 26/09/2024
-// Ultima atualizacao: 27/09/2024
+/*
+    JOGO DA FORCA
+    DESENVOLVIDO EM: 26/09/2024
+    ATUALIZADO EM:27/09/2024
+*/
+
 
 #include <stdio.h>     
 #include <stdlib.h>    
@@ -9,18 +12,18 @@
 #include <time.h>
 #include <locale.h>    // biblioteca para acentuacao
 
-#define TAMANHO_MAXIMO_PALAVRA 100  // define o tamanho maximo para as palavras utilizadas no dicionario
+
 #define TAMANHO_ALFABETO 27         // define o tamanho do alfabeto a ser utilizado(26 letras + 1 espaco)
 
-// estrutura para no da arvore Trie
-typedef struct TrieNode {
-    struct TrieNode* filhos[TAMANHO_ALFABETO]; // array de ponteiros para os filhos (representa letra ou espaco)
+// estrutura para no da arvore Trie - Dicionario
+typedef struct Dicionario {
+    struct Dicionario* filhos[TAMANHO_ALFABETO]; // array de ponteiros para os filhos (representa letra ou espaco)
     bool fim_da_palavra;                    // indica se o no atual e o fim da palavra
-} TrieNode;
+} Dicionario;
 
 // Função para criar um novo no da Trie
-TrieNode* criarNo() {
-    TrieNode* no = (TrieNode*)malloc(sizeof(TrieNode));  // aloca memoria para um novo no
+Dicionario* criarNo() {
+    Dicionario* no = (Dicionario*)malloc(sizeof(Dicionario));  // aloca memoria para um novo no
     no->fim_da_palavra = false;  // inicialmente, o no nao representa o fim de uma palavra
     for (int i = 0; i < TAMANHO_ALFABETO; i++) {
         no->filhos[i] = NULL;  // todos os ponteiros para os filhos iniciam como NULL
@@ -28,18 +31,18 @@ TrieNode* criarNo() {
     return no;  // retorna o ponteiro para o no recem-criado
 }
 
-// funcao auxiliar para mapear letras e espacos
+// funcao para mapear letras e espacos
 int obterIndice(char c) {
-    if (c == ' ') {  // se for um espaço
-        return 26;   // retorna o indice 26, reservado para o espaco
+    if (c == ' ') {  // se for um espaco
+        return 26;   // retorna o indice 26 (espaco)
     } else { //se for uma letra
-        return c - 'a';  // para letras minusculas, retorna a posicao baseada no valor ASCII (a -> 0, b -> 1, ..., z -> 25)
+        return c - 'a';  // para letras minusculas, retorna a posicao baseada no valor do numero do alfabeto
     }
 }
 
 // funcao para inserir uma palavra no "dicionario" (trie)
-void inserirPalavra(TrieNode* trie, const char* palavra) {
-    TrieNode* atual = trie;  // comeca a partir da raiz da Trie
+void inserirPalavra(Dicionario* trie, const char* palavra) {
+    Dicionario* atual = trie;  // comeca a partir da raiz da Trie
     while (*palavra) {       // enquanto tiver letra
         int index = obterIndice(*palavra);  // converte o caractere em um indice valido (0-25 para letras, 26 para espaço)
         if (!atual->filhos[index]) {        // se nao houver um no filho para o caractere atual
@@ -52,8 +55,8 @@ void inserirPalavra(TrieNode* trie, const char* palavra) {
 }
 
 // funcao para escolher uma palavra aleatoria da Trie
-void escolherPalavraAleatoria(TrieNode* trie, char* palavra_selecionada, int profundidade) {
-    TrieNode* atual = trie;  // comecamos a partir da raiz da Trie
+void escolherPalavraAleatoria(Dicionario* trie, char* palavra_selecionada, int profundidade) {
+    Dicionario* atual = trie;  // comecamos a partir da raiz da Trie (do dicionario)
     while (1) {
         int i;
         int opcoes[TAMANHO_ALFABETO];  // array para armazenar indices de opcoes validas
@@ -111,8 +114,8 @@ void exibirEstadoPalavra(const char* palavra, const bool* letras_adivinhadas) {
 }
 
 // funcao principal do jogo da forca
-void jogar(TrieNode* trie) {
-    char palavra_selecionada[TAMANHO_MAXIMO_PALAVRA];  // array para armazenar a palavra escolhida
+void jogar(Dicionario* trie) {
+    char palavra_selecionada[100];  // array para armazenar a palavra escolhida (100 porque é o limite do tamanho da palavra)
     escolherPalavraAleatoria(trie, palavra_selecionada, 0);  // seleciona palavra aleatoria da Trie
 
     int tentativas_restantes = 6;  // qtd de tentativas que o jogador tem
@@ -172,8 +175,8 @@ void jogar(TrieNode* trie) {
 }
 
 // funcao para criar a Trie com palavras pre-definidas
-TrieNode* criarDicionario() {
-    TrieNode* trie = criarNo();
+Dicionario* criarDicionario() {
+    Dicionario* trie = criarNo();
     inserirPalavra(trie, "copa do brasil");
     inserirPalavra(trie, "serie a");
     inserirPalavra(trie, "serie b");
@@ -226,9 +229,9 @@ TrieNode* criarDicionario() {
 
 // funcao principal do programa
 int main() {
-    setlocale(LC_ALL, "");  // define o locale para permitir acentos no texto
+    setlocale(LC_ALL, "");  // definicao do locale
 
-    TrieNode* trie = criarDicionario();  // cria a Trie com palavras pre-definidas
+    Dicionario* trie = criarDicionario();  // cria a Trie com palavras pre-definidas
     srand(time(NULL));  // inicializa o gerador de numeros aleatorios
 
     int opcao;
@@ -241,7 +244,7 @@ int main() {
         printf("\nDeseja jogar novamente? (1 - Sim / 2 - Não): ");
         scanf("%d", &opcao);
 
-    } while (opcao == 1);  // se o jogador escolher 1, o jogo reinicia
+    } while (opcao == 1);  // se escolher 1, o jogo reinicia
 
     printf("GAME OVER!\n");
 
